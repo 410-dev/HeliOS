@@ -1,0 +1,7 @@
+{
+    "name": "helios-branding-common",
+    "version": "{{VERSION}}",
+    "depends": [
+        "helios-core={{VERSION}}"
+    ]
+}

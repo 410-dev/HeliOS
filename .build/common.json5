@@ -5,9 +5,15 @@
         "AppRun"
     ],
     "Build": [
-        "core-skel"
+        "core-skel",
+        "branding-common"
     ],
     "TextSubstitute": {
-        "VERSION": "26.04"
+        "VERSION": "26.04",
+        "BUILD_DISTRO": "helios",
+        "NAME": "HeliOS",
+        "PrettyName": "HeliOS Workstation",
+        "EDITION_DISPLAY": "Enterprise",
+        "CODENAME": "Polaris",
     }
 }
