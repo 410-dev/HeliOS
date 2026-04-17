@@ -6,13 +6,12 @@
     ],
     "Build": [
         "core-skel",
-        "branding-common"
+        "branding-common",
+        "branding-enterprise",
+        "gnome-extension",
+        "enterprise"
     ],
     "TextSubstitute": {
-        "VERSION": "26.04",
-        "BUILD_DISTRO": "helios",
-        "NAME": "HeliOS",
-        "PrettyName": "HeliOS Workstation",
-        "CODENAME": "Polaris",
+        "EDITION_DISPLAY": "Enterprise",
     }
 }
