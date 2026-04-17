@@ -1,0 +1,63 @@
+[
+    {
+        "index": -1,
+        "command": "feature"
+    },
+    {
+        "index": 0,
+        "param_name": "Action",
+        "action": "static-list",
+        "available": [
+            "enable",
+            "disable",
+            "list"
+        ]
+    },
+    {
+        "index":  1,
+        "param_name": "Feature name",
+        "action": "dynamic-list",
+        "available": ["feature", "list", "--enabled", "--disabled"],
+        "prerequisite": {
+            "Action": {
+                "any_of": [
+                    "enable",
+                    "disable"
+                ]
+            }
+        }
+    },
+    {
+        "index": [2, 3, 4, 5, 6, 7, 8, 9],
+        "param_name": "option_flags",
+        "action": "static-list",
+        "available": [
+            "--experimental",
+            "--trigger-only",
+            "--one-way-enablement",
+            "--skip-compatibility-check"
+        ],
+        "prerequisite": {
+            "Action": {
+                "any_of": [
+                    "enable"
+                ]
+            }
+        }
+    },
+    {
+        "index": [2, 3, 4, 5, 6, 7, 8, 9],
+        "param_name": "option_flags",
+        "action": "static-list",
+        "available": [
+            "--trigger-only"
+        ],
+        "prerequisite": {
+            "Action": {
+                "any_of": [
+                    "disable"
+                ]
+            }
+        }
+    }
+]

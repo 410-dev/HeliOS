@@ -1,0 +1,10 @@
+*.idea
+*.DS_Store
+*.iml
+*.log
+*.class
+*.pyc
+*.pyo
+
+# Ignore build files
+/build/

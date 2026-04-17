@@ -1,0 +1,11 @@
+{
+    // 여기의 K/V 를 소스코드에서 치환함. {{key}} -> value 로 치환
+    "docs": "/usr/lib/helios/docs",
+    "frameworks": "/usr/lib",
+    "libraries/python": "/usr/lib/python3/dist-packages",
+    "root-skel": "/",
+    "commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
+    "commands/exec": "/usr/bin",
+    "commands/manuals": "/usr/lib/helios/commands/manuals",
+    "xdg-autostart": "/etc/xdg/autostart"
+}

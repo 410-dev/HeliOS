@@ -1,0 +1,13 @@
+{
+    "DebianPackageName": "{{name}}-{{version}}.deb",
+    "AppRunPackageName": "{{filename}}.apprunx",
+    "DependencyBuilds": [
+        "AppRun"
+    ],
+    "Build": [
+        "core-skel"
+    ],
+    "TextSubstitute": {
+        "VERSION": "26.04"
+    }
+}

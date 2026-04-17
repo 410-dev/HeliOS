@@ -1,0 +1,9 @@
+{
+    "Destination": "/usr/bin",
+    "Watch": [
+        "{{CMDS}}",
+        "{{USER_APPS}}",
+        "{{SYS_CMDS}}",
+        "{{SYS_APPS}}"
+    ]
+}

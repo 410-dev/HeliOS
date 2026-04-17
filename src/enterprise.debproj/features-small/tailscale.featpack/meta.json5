@@ -1,0 +1,39 @@
+{
+    "Id": "tailscale",
+    "Version": "1.0.0",
+    "DisplayName": {
+        "en": "Tailscale",
+        "kr": "Tailscale"
+    },
+    "Description": {
+        "en": "Tailscale is a zero-config VPN that makes it easy to connect your devices securely. It uses the WireGuard protocol to create a secure mesh network between your devices, allowing you to access them from anywhere.",
+        "kr": "Tailscale은 장치를 안전하게 연결할 수 있는 제로 구성 VPN입니다. WireGuard 프로토콜을 사용하여 장치 간에 안전한 메시 네트워크를 만들어 어디서나 액세스할 수 있도록 합니다."
+    },
+    "RequiredFeatures": [],
+    "EnableInteractiveValues": [
+        {
+            "Id": "login",
+            "Type": "bool",
+            "Message": {
+                "en": "Do you want to log in to Tailscale in current session?",
+                "kr": "현재 세션에서 Tailscale에 로그인하시겠습니까?"
+            }
+        },
+        {
+            "Id": "enable_system_tray",
+            "Type": "bool",
+            "Message": {
+                "en": "Do you want to enable Tailscale system tray icon?",
+                "kr": "Tailscale 시스템 트레이 아이콘을 활성화하시겠습니까?"
+            }
+        },
+        {
+            "Id": "set_current_user_as_operator",
+            "Type": "bool",
+            "Message": {
+                "en": "Do you want to set current user as Tailscale operator?",
+                "kr": "현재 사용자를 Tailscale 운영자로 설정하시겠습니까?"
+            }
+        }
+    ]
+}
