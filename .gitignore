@@ -7,4 +7,4 @@
 *.pyo
 
 # Ignore build files
-/build/
+output/
