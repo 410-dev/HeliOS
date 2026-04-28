@@ -12,7 +12,7 @@
         "VERSION": "26.04R1a",
         "BUILD_DISTRO": "helios",
         "NAME": "HeliOS",
-        "PrettyName": "HeliOS Workstation",
+        "PrettyName": "HeliOS",
         "CODENAME": "Polaris",
     }
 }

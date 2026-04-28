@@ -12,6 +12,6 @@
         "enterprise"
     ],
     "TextSubstitute": {
-        "EDITION_DISPLAY": "Enterprise",
+        "EDITION_DISPLAY": "Workstation Enterprise",
     }
 }
