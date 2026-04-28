@@ -8,7 +8,7 @@
         "core-skel",
         "branding-common",
         "branding-enterprise",
-        "gnome-extension",
+        "gnome-extensions",
         "enterprise"
     ],
     "TextSubstitute": {
