@@ -1,0 +1,16 @@
+{
+    "name":               "My Awesome App",
+    "version":            "1.0.0",
+    "description":        "App description",
+    "type":               "Application",
+    "author":             "John",
+    "apt-requirements":   ["fastfetch", "openjdk-25-jre", "python3>=3.10"],
+
+
+    "entry_point":        "python {APPDIR}/src/main.py",
+
+    "enforce_root_launch": false,
+    "keep_environment":    false,
+    "launch_in_terminal":  false,
+    "launch_in_screen":    "recommend"
+}
