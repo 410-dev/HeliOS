@@ -9,7 +9,7 @@
         "branding-common"
     ],
     "TextSubstitute": {
-        "VERSION": "26.04",
+        "VERSION": "26.04R1a",
         "BUILD_DISTRO": "helios",
         "NAME": "HeliOS",
         "PrettyName": "HeliOS Workstation",
