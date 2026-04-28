@@ -161,7 +161,7 @@ def copy_dir_contents(src, dest):
 
 
 def process_executable_files(root):
-    """Rename .bin.sh → executable, and .py with #!/usr/bin/python3 shebang → executable."""
+    """Rename .bin.sh → executable, and .py with #!/usr/bin/python3 or #!/usr/bin/env python3 shebang → executable."""
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d != "DEBIAN"]
         for fname in list(filenames):
@@ -174,7 +174,7 @@ def process_executable_files(root):
                 try:
                     with open(fpath, "r", encoding="utf-8", errors="replace") as f:
                         first_line = f.readline()
-                    if first_line.startswith("#!/usr/bin/python3"):
+                    if first_line.startswith("#!/usr/bin/python3") or first_line.startswith("#!/usr/bin/env python3"):
                         new_path = os.path.join(dirpath, fname[: -len(".py")])
                         os.rename(fpath, new_path)
                         make_executable(new_path)
