@@ -11,6 +11,8 @@
         "git",
         "build-essential",
         "zip",
-        "unzip"
+        "unzip",
+        "flatpak",
+        "gnome-software-plugin-flatpak"
     ]
 }
