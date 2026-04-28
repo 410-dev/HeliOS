@@ -6,5 +6,6 @@
     "commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
     "commands/exec": "/usr/bin",
     "commands/manuals": "/usr/lib/helios/commands/manuals",
+    "gnome-shell-extensions": "/usr/share/gnome-shell/extensions",
 //    "xdg-autostart": "/etc/xdg/autostart" // 현재 사용 안 함. 나중에 필요하면 추가
 }

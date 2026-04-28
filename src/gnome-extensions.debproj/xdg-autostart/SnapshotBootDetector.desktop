@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=SnapshotBootDetector
-GenericName=Snapshot Boot Detector Service
-Comment=Detects if current boot session is a snapshot or not.
-Exec={{SYS_FRAMEWORKS}}/Snapshot/snapshot-bootstateutil.sh
-Terminal=false
-Type=Application
-X-GNOME-Autostart-enabled=true

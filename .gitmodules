@@ -1,0 +1,6 @@
+[submodule "src/gnome-extensions.debproj/gnome-shell-extensions/gnome-clipboard-history"]
+	path = src/gnome-extensions.debproj/gnome-shell-extensions/gnome-clipboard-history
+	url = https://github.com/SUPERCILEX/gnome-clipboard-history.git
+[submodule "src/gnome-extensions.debproj/gnome-shell-extensions/clipboard-history@alexsaveau.dev"]
+	path = src/gnome-extensions.debproj/gnome-shell-extensions/clipboard-history@alexsaveau.dev
+	url = https://github.com/SUPERCILEX/gnome-clipboard-history.git

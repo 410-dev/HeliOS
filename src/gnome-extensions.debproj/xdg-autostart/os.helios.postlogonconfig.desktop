@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=os.helios.postlogonconfig
+GenericName=Gnome Session Post Logon Configuration
+Comment=Configure queued tasks to run after user logon
+Exec=/usr/bin/postlogonconfig
+Terminal=false
+Type=Application
+X-GNOME-Autostart-enabled=true

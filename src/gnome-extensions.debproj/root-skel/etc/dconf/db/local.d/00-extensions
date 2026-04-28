@@ -1,0 +1,2 @@
+[org/gnome/shell]
+enabled-extensions=['myextension1@myname.example.com', 'myextension2@myname.example.com']

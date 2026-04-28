@@ -6,6 +6,11 @@
         "gnome-shell-extension-manager",
         "gnome-tweaks",
         "python3-nautilus",
-        "zenity"
+        "zenity",
+        "gettext",
+        "git",
+        "build-essential",
+        "zip",
+        "unzip"
     ]
 }
