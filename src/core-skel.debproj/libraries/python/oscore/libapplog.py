@@ -17,15 +17,15 @@ def __write__(msg: str):
     with open(f"{ctx.box()}/logs/{__date__()}.log", "a", encoding="utf-8") as f:
         f.write(msg + "\n")
 
-    # 만약 {{AQUAROOT}}/logs 에 쓰기가 가능하다면 거기도 쓴다.
-    if os.access("{{AQUAROOT}}/logs", os.W_OK):
-        os.makedirs(f"{{AQUAROOT}}/logs/{ctx.id()}", exist_ok=True)
-        with open(f"{{AQUAROOT}}/logs/{ctx.id()}/{__date__()}.log", "a", encoding="utf-8") as f:
+    # 만약 {{HELIOSROOT}}/logs 에 쓰기가 가능하다면 거기도 쓴다.
+    if os.access("{{HELIOSROOT}}/logs", os.W_OK):
+        os.makedirs(f"{{HELIOSROOT}}/logs/{ctx.id()}", exist_ok=True)
+        with open(f"{{HELIOSROOT}}/logs/{ctx.id()}/{__date__()}.log", "a", encoding="utf-8") as f:
             f.write(msg + "\n")
 
     # 만약 각각의 디렉터리에 n 일이 지난 로그 파일 혹은 그보다 오래된 파일이 있다면 삭제
     n = 14
-    for log_dir in [f"{ctx.box()}/logs", f"{{AQUAROOT}}/logs/{ctx.id()}"]:
+    for log_dir in [f"{ctx.box()}/logs", f"{{HELIOSROOT}}/logs/{ctx.id()}"]:
         if os.path.exists(log_dir):
             for filename in os.listdir(log_dir):
                 if filename.endswith(".log"):

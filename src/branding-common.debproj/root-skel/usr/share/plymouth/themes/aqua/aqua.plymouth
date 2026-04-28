@@ -1,12 +1,12 @@
 [Plymouth Theme]
-Name=AquariusOS
-Description=AquariusOS update theme
+Name=HeliOS
+Description=HeliOS update theme
 ModuleName=two-step
 
 [two-step]
 Font=Ubuntu 12
 TitleFont=Ubuntu Light 30
-ImageDir=/usr/share/plymouth/themes/spinner-aqua
+ImageDir=/usr/share/plymouth/themes/spinner-helios
 DialogHorizontalAlignment=.5
 DialogVerticalAlignment=.7
 TitleHorizontalAlignment=.5
@@ -40,14 +40,14 @@ UseFirmwareBackground=true
 SuppressMessages=false
 ProgressBarShowPercentComplete=false
 UseProgressBar=true
-Title=Updating AquariusOS...
+Title=Updating System...
 SubTitle=Do not turn off or reboot
 
 [system-upgrade]
 SuppressMessages=false
 ProgressBarShowPercentComplete=false
 UseProgressBar=true
-Title=Upgrading AquariusOS...
+Title=Upgrading System...
 SubTitle=Do not turn off or reboot
 
 [firmware-upgrade]

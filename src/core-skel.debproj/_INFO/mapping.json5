@@ -4,6 +4,7 @@
     "frameworks": "/usr/lib",
     "libraries/python": "/usr/lib/python3/dist-packages",
     "root-skel": "/",
+    "HELIOSROOT": "/usr/lib/helios",
     "commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
     "commands/exec": "/usr/bin",
     "commands/manuals": "/usr/lib/helios/commands/manuals",
