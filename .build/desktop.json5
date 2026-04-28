@@ -1,0 +1,15 @@
+{
+    "DebianPackageName": "{{name}}-{{version}}.deb",
+    "AppRunPackageName": "{{filename}}.apprunx",
+    "DependencyBuilds": [
+        "AppRun"
+    ],
+    "Build": [
+        "core-skel",
+        "branding-common",
+        "gnome-extensions"
+    ],
+    "TextSubstitute": {
+        "EDITION_DISPLAY": "Workstation",
+    }
+}
