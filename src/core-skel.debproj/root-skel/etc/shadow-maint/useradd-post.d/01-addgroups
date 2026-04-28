@@ -1,2 +1,3 @@
 #!/bin/sh
 #usermod -a -G vfsusers "$SUBJECT"
+exit 0
