@@ -435,8 +435,8 @@ def run_build(edition, verbose):
                 if result.returncode != 0:
                     if not verbose and result.stderr:
                         print(result.stderr, file=sys.stderr)
-                    print(f"  [WARN] git clone failed for {clone_name}, skipping.")
-                    continue
+                    print(f"  [ERROR] git clone failed for {clone_name}, skipping.")
+                    sys.exit(1)
 
                 build_sh = os.path.join(clone_dir, "build.sh")
                 if os.path.exists(build_sh):
@@ -450,7 +450,8 @@ def run_build(edition, verbose):
                     if res.returncode != 0:
                         if not verbose and res.stderr:
                             print(res.stderr, file=sys.stderr)
-                        print(f"  [WARN] build.sh failed for {clone_name}.")
+                        print(f"  [ERROR] build.sh failed for {clone_name}.")
+                        sys.exit(1)
                 else:
                     apprunx_files = list(Path(clone_dir).rglob("*.apprunx"))
                     debproj_dirs = list(Path(clone_dir).rglob("*.debproj"))
