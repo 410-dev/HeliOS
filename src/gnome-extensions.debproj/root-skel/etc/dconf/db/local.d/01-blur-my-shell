@@ -1,0 +1,5 @@
+[org/gnome/shell/extensions/blur-my-shell/dash-to-dock]
+static-blur=false
+
+[org/gnome/shell/extensions/blur-my-shell/panel]
+static-blur=false
