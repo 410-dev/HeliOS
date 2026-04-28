@@ -16,6 +16,12 @@ ORIG_SCRIPT_PATH: str = "/usr/share/os.helios.postlogonconfig/scripts/"
 QUEUE_PATH: str = os.path.expanduser("~/.config/os.helios.postlogonconfig/queue/")
 QUEUE_PERM_PATH: str = os.path.expanduser("~/.config/os.helios.postlogonconfig/perm/")
 
+# Require sudo
+if os.geteuid() != 0:
+    print("Error: This command must be run as root.")
+    sys.exit(1)
+
+
 def exec_config():
     # queue 폴더에서 각 파일이 ORIG_SCRIPT_PATH에 심볼릭 링크인지 확인
 
@@ -37,12 +43,13 @@ def exec_config():
         else:
             print(f"Warning: {entry_name} is not a symbolic link. Skipping.")
 
-
-    for entry in os.listdir(QUEUE_PATH):
+    dirs: list = os.listdir(QUEUE_PATH) if os.path.isdir(QUEUE_PATH) else []
+    for entry in dirs:
         run(QUEUE_PATH, entry)
         os.remove(os.path.join(QUEUE_PATH, entry)) # 실행 후 큐에서 제거 (성공 여부와 상관없이 제거)
 
-    for entry in os.listdir(QUEUE_PERM_PATH):
+    dirs = os.listdir(QUEUE_PERM_PATH) if os.path.isdir(QUEUE_PERM_PATH) else []
+    for entry in dirs:
         run(QUEUE_PERM_PATH, entry)
 
 
