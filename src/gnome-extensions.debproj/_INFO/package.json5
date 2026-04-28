@@ -12,7 +12,5 @@
         "build-essential",
         "zip",
         "unzip",
-        "flatpak",
-        "gnome-software-plugin-flatpak"
     ]
 }
