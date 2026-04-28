@@ -14,11 +14,5 @@
         "openjdk-25-jre",
         "net-tools",
         "libnotify-bin",
-
-        // Gnome section
-        "gnome-shell-extension-manager",
-        "gnome-tweaks",
-        "python3-nautilus",
-        "zenity"
     ]
 }
