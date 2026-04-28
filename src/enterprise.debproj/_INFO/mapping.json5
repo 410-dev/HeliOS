@@ -6,6 +6,5 @@
     "general-commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
     "general-commands/exec": "/usr/bin",
     "general-commands/manuals": "/usr/lib/helios/commands/manuals",
-    "features-small": "/usr/lib/helios/features",
-    "features-big/reachsphere/"
+    "features-small": "/usr/lib/helios/features"
 }
