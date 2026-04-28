@@ -14,5 +14,9 @@
         "openjdk-25-jre",
         "net-tools",
         "libnotify-bin",
+        "git",
+        "build-essential",
+        "zip",
+        "unzip"
     ]
 }
