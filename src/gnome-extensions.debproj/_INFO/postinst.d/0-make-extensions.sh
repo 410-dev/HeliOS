@@ -9,6 +9,6 @@ make
 echo "Building Blur My Shell extension..."
 cd /usr/share/gnome-shell/extensions
 unzip blur-my-shell@aunetx.shell-extension.zip -d blur-my-shell@aunetx
-
+glib-schemas blur-my-shell@aunetx/schemas
 
 set +e
