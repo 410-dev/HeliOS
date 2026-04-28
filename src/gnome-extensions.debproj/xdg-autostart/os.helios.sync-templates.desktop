@@ -2,7 +2,7 @@
 Name=os.helios.sync-templates
 GenericName=Synchronize User Template Files
 Comment=Copy files from /etc/skel to the user's home directory if they do not already exist.
-Exec=/usr/bin/cp -ru /etc/skel/. ~/
+Exec=/usr/bin/cp -ru /etc/skel/. .
 Terminal=false
 Type=Application
 X-GNOME-Autostart-enabled=true
