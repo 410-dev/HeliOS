@@ -3,9 +3,9 @@ import os
 
 from AppContext import AppContext
 
-def main():
-    pass
+def main(args: list[str]) -> int:
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv))
