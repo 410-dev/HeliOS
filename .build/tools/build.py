@@ -105,8 +105,10 @@ def deep_merge(base, override):
 
 # ── Text substitution ──────────────────────────────────────────────────────────
 
-def apply_subs(text, subs):
+def apply_subs(text, subs, verbose):
     for k, v in subs.items():
+        # if verbose:
+        #     print("    Substituting:", "{{" + k + "}}", "→", v)
         text = text.replace("{{" + k + "}}", v)
     return text
 
@@ -119,7 +121,7 @@ def is_binary(path):
         return True
 
 
-def substitute_tree(root, subs, skip_dirs=None):
+def substitute_tree(root, subs, skip_dirs=None, verbose=False):
     """Apply text substitutions to all non-binary files under root."""
     skip_dirs = skip_dirs or set()
     for dirpath, dirnames, filenames in os.walk(root):
@@ -131,7 +133,7 @@ def substitute_tree(root, subs, skip_dirs=None):
             try:
                 with open(fpath, "r", encoding="utf-8", errors="replace") as f:
                     content = f.read()
-                new_content = apply_subs(content, subs)
+                new_content = apply_subs(content, subs, verbose)
                 if new_content != content:
                     with open(fpath, "w", encoding="utf-8") as f:
                         f.write(new_content)
@@ -193,22 +195,28 @@ def build_debproj(debproj_dir, output_dir, recipe, verbose):
     pkg_path = os.path.join(info_dir, "package.json5")
     mapping_path = os.path.join(info_dir, "mapping.json5")
 
+    try:
+        mapping = load_json5(mapping_path)
+        subs.update(mapping)
+    except Exception as exc:
+        print(f"  [WARN] Could not parse mapping.json5: {exc}")
+
     if not os.path.exists(pkg_path):
         print(f"  [WARN] No _INFO/package.json5 in {debproj_dir}, skipping.")
         return None
 
     pkg = load_json5(pkg_path)
 
-    name = apply_subs(pkg.get("name", "unknown"), subs)
-    version = apply_subs(pkg.get("version", "0"), subs)
-    arch = apply_subs(pkg.get("architecture", "all"), subs)
+    name = apply_subs(pkg.get("name", "unknown"), subs, verbose)
+    version = apply_subs(pkg.get("version", "0"), subs, verbose)
+    arch = apply_subs(pkg.get("architecture", "all"), subs, verbose)
     maintainer = apply_subs(
-        pkg.get("maintainer", "HeliOS Team <noreply@example.com>"), subs
+        pkg.get("maintainer", "HeliOS Team <noreply@example.com>"), subs, verbose
     )
-    description = apply_subs(pkg.get("description", name), subs)
+    description = apply_subs(pkg.get("description", name), subs, verbose)
 
     def resolve_list(field):
-        return [to_debian_dep(apply_subs(x, subs)) for x in pkg.get(field, [])]
+        return [to_debian_dep(apply_subs(x, subs, verbose)) for x in pkg.get(field, [])]
 
     depends = resolve_list("depends")
     conflicts = resolve_list("conflicts")
@@ -217,7 +225,7 @@ def build_debproj(debproj_dir, output_dir, recipe, verbose):
 
     name_subs = dict(subs)
     name_subs.update({"name": name, "version": version, "architecture": arch})
-    deb_filename = apply_subs(deb_name_tpl, name_subs)
+    deb_filename = apply_subs(deb_name_tpl, name_subs, verbose)
 
     print(f"  Building {os.path.basename(debproj_dir)}: {name} {version} → {deb_filename}")
 
@@ -319,7 +327,7 @@ def build_apprunxproj(proj_dir, output_dir, recipe, verbose):
 
     subs = dict(recipe.get("TextSubstitute", {}))
     subs["filename"] = proj_stem
-    pkg_name = apply_subs(recipe.get("AppRunPackageName", "{{filename}}.apprunx"), subs)
+    pkg_name = apply_subs(recipe.get("AppRunPackageName", "{{filename}}.apprunx"), subs, verbose)
 
     os.makedirs(output_dir, exist_ok=True)
     out_path = os.path.join(output_dir, pkg_name)
@@ -478,7 +486,7 @@ def run_build(edition, verbose):
 
         # ── Steps 13-14: Text substitution ────────────────────────────────────
         print("\n[3/5] Applying text substitutions...")
-        substitute_tree(workspace, subs, skip_dirs={"_deps"})
+        substitute_tree(workspace, subs, skip_dirs={"_deps"}, verbose=verbose)
         print("  Done.")
 
         # ── Step 15: Build all packages, deepest first ────────────────────────
