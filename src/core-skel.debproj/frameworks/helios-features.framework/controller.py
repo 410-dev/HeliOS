@@ -83,7 +83,7 @@ def enable():
 
     # If apprunx file exists, then it is not so simple as installing local package.
     # If toml file, then read it and install the packages.
-    apprunx_path: str = f"{{features}}/list/{feature_name}.apprunx"
+    apprunx_path: str = f"{{features}}/list/{feature_name}.feature.apprunx"
     if not os.path.isfile(apprunx_path):
         print(f"[-] Feature package not found: {feature_name}")
         exit(1)
@@ -117,7 +117,7 @@ def disable():
 
     # If apprunx file exists, then it is not so simple as installing local package.
     # If toml file, then read it and install the packages.
-    apprunx_path: str = f"{{features}}/list/{feature_name}.apprunx"
+    apprunx_path: str = f"{{features}}/list/{feature_name}.feature.apprunx"
     if not os.path.isfile(apprunx_path):
         print(f"[-] Feature package not found: {feature_name}")
         exit(1)
