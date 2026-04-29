@@ -325,11 +325,18 @@ def build_apprunxproj(proj_dir, output_dir, recipe, verbose):
     out_path = os.path.join(output_dir, pkg_name)
 
     print(f"  Packaging {os.path.basename(proj_dir)} → {pkg_name}")
-    zip_base = out_path[: -len(".apprunx")] if out_path.endswith(".apprunx") else out_path
-    shutil.make_archive(zip_base, "zip", proj_dir)
-    zip_path = zip_base + ".zip"
-    if os.path.exists(zip_path):
-        os.rename(zip_path, out_path)
+    if not shutil.which("apprun3-package"):
+        print("  [ERROR] 'apprun3-package' tool not found in PATH. Please install it to build .apprunx packages.", file=sys.stderr)
+        return None
+
+    commandline = ["apprun3-package", "-o", out_path, "--prefer", "speed", proj_dir]
+    result = subprocess.run(commandline, capture_output=not verbose, text=True)
+    if result.returncode != 0:
+        if not verbose and result.stderr:
+            print(result.stderr, file=sys.stderr)
+        print(f"  [ERROR] Failed to package {proj_stem} with apprun3-package.", file=sys.stderr)
+        return None
+
 
     print(f"  Built: {out_path}")
     return out_path
