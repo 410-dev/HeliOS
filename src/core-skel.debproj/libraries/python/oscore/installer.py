@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import json
 import time
-import libatomic
+import oscore.libatomic as libatomic
 import tempfile
 from pygments.lexer import default
 
