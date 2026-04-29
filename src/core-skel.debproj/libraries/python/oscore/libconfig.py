@@ -1,12 +1,31 @@
-import sys
-from abc import ABC, abstractmethod
-from collections import UserDict
-from oscore.libatomic import atomic_write
-from json import JSONDecodeError
 import json
 import os
 import subprocess
 import sys
+from abc import ABC, abstractmethod
+from collections import UserDict
+from json import JSONDecodeError
+from typing import Any
+
+from oscore.libatomic import atomic_write
+
+try:
+    import tomllib  # Python 3.11+
+except ModuleNotFoundError:  # pragma: no cover
+    try:
+        import tomli as tomllib
+    except ModuleNotFoundError:
+        tomllib = None
+
+try:
+    import tomli_w
+except ModuleNotFoundError:  # pragma: no cover
+    tomli_w = None
+
+try:
+    import yaml
+except ModuleNotFoundError:  # pragma: no cover
+    yaml = None
 
 class ConfigBase(ABC):
     """
@@ -225,8 +244,8 @@ class Config(UserDict, ConfigBase):
         if ".." in path:
             raise ValueError("Path cannot contain '..'")
 
-        if not path.endswith(".json"):
-            path += ".json"
+        if not self._is_supported_config_path(path):
+            path += ".toml"
 
         home_path: str = os.path.expanduser("~/.config/" + path)
         global_path: str = "/etc/" + path
@@ -301,6 +320,92 @@ class Config(UserDict, ConfigBase):
 
     def _log(self, message: str):
         pass
+
+    # ------------------------------------------------------------------
+    # 파일 포맷 처리
+    # ------------------------------------------------------------------
+
+    _JSON_EXTENSIONS = (".json",)
+    _TOML_EXTENSIONS = (".toml",)
+    _YAML_EXTENSIONS = (".yaml", ".yml")
+    _CONFIG_EXTENSIONS = _JSON_EXTENSIONS + _TOML_EXTENSIONS + _YAML_EXTENSIONS
+
+    @classmethod
+    def _is_supported_config_path(cls, path: str) -> bool:
+        return path.lower().endswith(cls._CONFIG_EXTENSIONS)
+
+    @classmethod
+    def _format_name(cls, path: str) -> str:
+        lower_path = path.lower()
+        if lower_path.endswith(cls._JSON_EXTENSIONS):
+            return "JSON"
+        if lower_path.endswith(cls._TOML_EXTENSIONS):
+            return "TOML"
+        if lower_path.endswith(cls._YAML_EXTENSIONS):
+            return "YAML"
+        return "TEXT"
+
+    @classmethod
+    def _require_toml_reader(cls):
+        if tomllib is None:
+            raise RuntimeError("TOML 읽기를 사용하려면 Python 3.11+ 또는 'tomli'가 필요합니다.")
+
+    @classmethod
+    def _require_toml_writer(cls):
+        if tomli_w is None:
+            raise RuntimeError("TOML 쓰기를 사용하려면 'tomli-w' 패키지가 필요합니다.")
+
+    @classmethod
+    def _require_yaml(cls):
+        if yaml is None:
+            raise RuntimeError("YAML 지원을 사용하려면 'PyYAML' 패키지가 필요합니다.")
+
+    @classmethod
+    def _load_structured_file(cls, path: str) -> dict:
+        lower_path = path.lower()
+
+        if lower_path.endswith(cls._JSON_EXTENSIONS):
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        elif lower_path.endswith(cls._TOML_EXTENSIONS):
+            cls._require_toml_reader()
+            with open(path, "rb") as f:
+                data = tomllib.load(f)
+        elif lower_path.endswith(cls._YAML_EXTENSIONS):
+            cls._require_yaml()
+            with open(path, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+        else:
+            raise ValueError(f"Unsupported config file format: {path}")
+
+        if data is None:
+            return {}
+        if not isinstance(data, dict):
+            raise ValueError(f"Config file must contain a mapping/object at top level: {path}")
+        return data
+
+    @classmethod
+    def _dump_structured_file(cls, path: str, data: dict) -> str:
+        lower_path = path.lower()
+
+        if lower_path.endswith(cls._JSON_EXTENSIONS):
+            return json.dumps(data, indent=4, ensure_ascii=False)
+        if lower_path.endswith(cls._TOML_EXTENSIONS):
+            cls._require_toml_writer()
+            return tomli_w.dumps(data)
+        if lower_path.endswith(cls._YAML_EXTENSIONS):
+            cls._require_yaml()
+            return yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
+
+        raise ValueError(f"Unsupported config file format: {path}")
+
+    @classmethod
+    def _dump_linked_value(cls, path: str, value: Any) -> str:
+        if cls._is_supported_config_path(path):
+            if not isinstance(value, dict):
+                raise TypeError(f"Structured linked config file requires dict value: {path}")
+            return cls._dump_structured_file(path, value)
+        return str(value)
 
     # ------------------------------------------------------------------
     # ConfigBase 계약 구현
@@ -388,14 +493,11 @@ class Config(UserDict, ConfigBase):
             else:
                 try:
                     os.makedirs(os.path.dirname(link_path), exist_ok=True)
-                    if link_path.endswith(".json"):
-                        atomic_write(link_path, json.dumps(value, indent=4, ensure_ascii=False))
-                    else:
-                        atomic_write(link_path, str(value))
+                    atomic_write(link_path, self._dump_linked_value(link_path, value))
                 except IOError as e:
                     raise ValueError(f"IO error while saving linked config file: {link_path}") from e
                 except TypeError as e:
-                    raise ValueError(f"Invalid JSON format in configuration data for linked file: {link_path}") from e
+                    raise ValueError(f"Invalid configuration data for linked file: {link_path}") from e
         else:
             self.data[key] = value
 
@@ -430,7 +532,7 @@ class Config(UserDict, ConfigBase):
         dump_data = self.data.copy()
         if self.resolve_pattern and self.links:
             dump_data["_links"] = self.links
-        return json.dumps(dump_data, indent=4, ensure_ascii=False)
+        return self._dump_structured_file(self.path, dump_data)
 
     def exists(self) -> bool:
         if self.io_mode == 0:
@@ -447,26 +549,24 @@ class Config(UserDict, ConfigBase):
     def _read_linked_file(self, key):
         link_path = self.links[key]
         try:
-            with open(link_path, "r") as f:
-                if link_path.endswith(".json"):
-                    return json.load(f)
-                else:
-                    return f.read().strip()
+            if self._is_supported_config_path(link_path):
+                return self._load_structured_file(link_path)
+            with open(link_path, "r", encoding="utf-8") as f:
+                return f.read().strip()
         except FileNotFoundError:
             raise
-        except JSONDecodeError:
-            raise ValueError(f"Invalid JSON format in linked config file: {link_path}")
+        except (JSONDecodeError, ValueError) as e:
+            raise ValueError(f"Invalid {self._format_name(link_path)} format in linked config file: {link_path}") from e
         except IOError as e:
             raise ValueError(f"IO error while loading linked config file: {link_path}") from e
 
     def _fetch_general(self) -> "Config":
         try:
-            with open(self.path, "r") as f:
-                self.data = json.load(f)
+            self.data = self._load_structured_file(self.path)
         except FileNotFoundError:
             self.data = {}
-        except JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON format in config file: {self.path}") from e
+        except (JSONDecodeError, ValueError) as e:
+            raise ValueError(f"Invalid {self._format_name(self.path)} format in config file: {self.path}") from e
         except IOError as e:
             raise ValueError(f"IO error while loading config file: {self.path}") from e
         return self
@@ -476,10 +576,9 @@ class Config(UserDict, ConfigBase):
         for priority in self.cascade_merge_priorities[::-1]:
             if os.path.isfile(priority):
                 try:
-                    with open(priority, "r") as f:
-                        merged_data.update(json.load(f))
-                except JSONDecodeError as e:
-                    raise ValueError(f"Invalid JSON format in config file: {priority}") from e
+                    merged_data.update(self._load_structured_file(priority))
+                except (JSONDecodeError, ValueError) as e:
+                    raise ValueError(f"Invalid {self._format_name(priority)} format in config file: {priority}") from e
                 except IOError as e:
                     raise ValueError(f"IO error while loading config file: {priority}") from e
         self.data = merged_data
@@ -491,12 +590,12 @@ class Config(UserDict, ConfigBase):
             dump_data = self.data.copy()
             if self.resolve_pattern and self.links:
                 dump_data["_links"] = self.links
-            atomic_write(self.path, json.dumps(dump_data, indent=4, ensure_ascii=False))
+            atomic_write(self.path, self._dump_structured_file(self.path, dump_data))
             return True
         except IOError as e:
             raise IOError(f"IO error while saving config file: {self.path}") from e
         except TypeError as e:
-            raise ValueError(f"Invalid JSON format in configuration data: {self.path}") from e
+            raise ValueError(f"Invalid configuration data: {self.path}") from e
 
     def _sync_cascade_merge(self) -> bool:
         target_path: str = self.cascade_merge_priorities[self.cascade_merge_index]
@@ -505,9 +604,9 @@ class Config(UserDict, ConfigBase):
             dump_data = self.data.copy()
             if self.resolve_pattern and self.links:
                 dump_data["_links"] = self.links
-            atomic_write(target_path, json.dumps(dump_data, indent=4, ensure_ascii=False))
+            atomic_write(target_path, self._dump_structured_file(target_path, dump_data))
             return True
         except IOError as e:
             raise IOError(f"IO error while saving config file: {target_path}") from e
         except TypeError as e:
-            raise ValueError(f"Invalid JSON format in configuration data: {target_path}") from e
+            raise ValueError(f"Invalid configuration data: {target_path}") from e
