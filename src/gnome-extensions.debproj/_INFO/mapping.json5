@@ -7,5 +7,6 @@
     "commands/exec": "/usr/bin",
     "commands/manuals": "/usr/lib/helios/commands/manuals",
     "gnome-shell-extensions": "/usr/share/gnome-shell/extensions",
-    "xdg-autostart": "/etc/xdg/autostart"
+    "xdg-autostart": "/etc/xdg/autostart",
+    "features": "/usr/lib/helios/features",
 }
