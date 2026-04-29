@@ -188,24 +188,35 @@ def process_executable_files(root):
 
 def build_debproj(debproj_dir, output_dir, recipe, verbose):
     """Build a .debproj directory into a .deb file. Returns output path or None."""
-    subs = recipe.get("TextSubstitute", {})
+    base_subs = dict(recipe.get("TextSubstitute", {}))
     deb_name_tpl = recipe.get("DebianPackageName", "{{name}}-{{version}}.deb")
 
     info_dir = os.path.join(debproj_dir, "_INFO")
     pkg_path = os.path.join(info_dir, "package.json5")
     mapping_path = os.path.join(info_dir, "mapping.json5")
 
-    try:
-        mapping = load_json5(mapping_path)
-        subs.update(mapping)
-    except Exception as exc:
-        print(f"  [WARN] Could not parse mapping.json5: {exc}")
-
     if not os.path.exists(pkg_path):
         print(f"  [WARN] No _INFO/package.json5 in {debproj_dir}, skipping.")
         return None
 
     pkg = load_json5(pkg_path)
+
+    mapping = {}
+    if os.path.exists(mapping_path):
+        try:
+            mapping = load_json5(mapping_path)
+        except Exception as exc:
+            print(f"  [WARN] Could not parse mapping.json5: {exc}")
+            mapping = {}
+
+    mapping_subs = {
+        str(k): str(v)
+        for k, v in mapping.items()
+        if isinstance(v, str)
+    }
+
+    subs = dict(base_subs)
+    subs.update(mapping_subs)
 
     name = apply_subs(pkg.get("name", "unknown"), subs, verbose)
     version = apply_subs(pkg.get("version", "0"), subs, verbose)
@@ -255,6 +266,7 @@ def build_debproj(debproj_dir, output_dir, recipe, verbose):
                 os.makedirs(dest, exist_ok=True)
                 copy_dir_contents(src, dest)
 
+        substitute_tree(tmpdir, subs, skip_dirs={"DEBIAN"}, verbose=verbose)
         process_executable_files(tmpdir)
 
         # Write DEBIAN/control
@@ -293,6 +305,7 @@ def build_debproj(debproj_dir, output_dir, recipe, verbose):
                 # Strip shebang to avoid duplicates when combining
                 if content.startswith("#!"):
                     content = content[content.find("\n") + 1 :]
+                content = apply_subs(content, subs, verbose)
                 parts.append(content)
             script_out = os.path.join(debian_dir, script_name)
             with open(script_out, "w", encoding="utf-8") as f:
