@@ -3,6 +3,8 @@ import os
 import subprocess
 import sys
 
+from oscore.libconfig import Config
+
 # Usage
 # $0 add-source | remove-source | update-repository
 
@@ -72,6 +74,75 @@ def update_repository():
         print("    Try: sudo apt install dpkg-dev")
         exit(1)
 
+def enable():
+    feature_name: str = sys.argv[2] if len(sys.argv) > 2 else None
+    if feature_name is None:
+        print("[-] Feature name is required for enable command.")
+        print_usage()
+        exit(1)
+
+    # If apprunx file exists, then it is not so simple as installing local package.
+    # If toml file, then read it and install the packages.
+    apprunx_path: str = f"{{features}}/list/{feature_name}.apprunx"
+    if not os.path.isfile(apprunx_path):
+        print(f"[-] Feature package not found: {feature_name}")
+        exit(1)
+
+    # Read registry
+    config: Config = Config("os.helios.features.EnabledList", enforce_global=True).fetch()
+
+    # Check if feature is already enabled
+    if feature_name in config.keys() and config.get(feature_name).get("enabled") == True:
+        print(f"[-] Feature already enabled: {feature_name}")
+        exit(1)
+
+    print(f"[*] Enabling feature (apprunx mode): {feature_name}")
+    result = subprocess.run(["apprun", apprunx_path, "enable"], check=True)
+    if result.returncode == 0:
+        print(f"[+] Feature enabled: {feature_name}")
+    else:
+        print(f"[-] Failed to enable feature: {feature_name}")
+        exit(1)
+
+    config_dat = config.get(feature_name, {}).update({"enabled": True})
+    config[feature_name] = config_dat
+    config.sync()
+
+def disable():
+    feature_name: str = sys.argv[2] if len(sys.argv) > 2 else None
+    if feature_name is None:
+        print("[-] Feature name is required for enable command.")
+        print_usage()
+        exit(1)
+
+    # If apprunx file exists, then it is not so simple as installing local package.
+    # If toml file, then read it and install the packages.
+    apprunx_path: str = f"{{features}}/list/{feature_name}.apprunx"
+    if not os.path.isfile(apprunx_path):
+        print(f"[-] Feature package not found: {feature_name}")
+        exit(1)
+
+    # Read registry
+    config: Config = Config("os.helios.features.EnabledList", enforce_global=True).fetch()
+
+    # Check if feature is already enabled
+    if feature_name not in config.keys() or config.get(feature_name).get("enabled") != True:
+        print(f"[-] Feature already disabled: {feature_name}")
+        exit(1)
+
+    print(f"[*] Disabling feature (apprunx mode): {feature_name}")
+    result = subprocess.run(["apprun", apprunx_path, "disable"], check=True)
+    if result.returncode == 0:
+        print(f"[+] Feature disabled: {feature_name}")
+    else:
+        print(f"[-] Failed to disable feature: {feature_name}")
+        exit(1)
+
+    config_dat = config.get(feature_name, {}).update({"enabled": False})
+    config[feature_name] = config_dat
+    config.sync()
+
+
 def print_usage():
     script = os.path.basename(sys.argv[0])
     print(f"Usage: {script} <command>")
@@ -79,6 +150,8 @@ def print_usage():
     print("  add-source         Add APT source entry")
     print("  remove-source      Remove APT source entry")
     print("  update-repository  Rebuild package index and run apt update")
+    print("  enable             Enable feature")
+    print("  disable            Disable feature")
 
 # Main
 if len(sys.argv) < 2:
@@ -94,6 +167,10 @@ match command:
         remove_source()
     case "update-repository":
         update_repository()
+    case "enable":
+        enable()
+    case "disable":
+        disable()
     case _:
         print(f"[-] Unknown command: {command}")
         print_usage()
