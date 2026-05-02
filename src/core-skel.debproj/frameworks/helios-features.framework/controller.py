@@ -2,6 +2,7 @@
 import os
 import subprocess
 import sys
+import oscore.libuser as libuser
 
 from oscore.libconfig import Config
 
@@ -12,8 +13,8 @@ source_path: str = "/etc/apt/sources.list.d/helios-feature.list"
 repo_path: str = "{{features}}"
 
 # Require sudo
-if not os.geteuid() == 0:
-    print("This script must be run as root.")
+if not libuser.is_current_user_privileged_as_admin():
+    print(f"This script must be run as root or should be privileged as administrator group ({libuser.GROUP_Administrator()}).")
     exit(1)
 
 def add_source():
