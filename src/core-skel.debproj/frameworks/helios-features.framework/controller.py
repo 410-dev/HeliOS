@@ -98,7 +98,21 @@ def enable():
         exit(1)
 
     print(f"[*] Enabling feature (apprunx mode): {feature_name}")
-    result = subprocess.run(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    try:
+        result = subprocess.run(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[-] Command failed: {e}")
+        print(f"Subprocess produced:")
+        if result is None:
+            print("Nothing")
+        else:
+            print("====stdout====")
+            print(f"{result.stdout.decode('utf-8')}")
+            print("")
+            print("====stderr====")
+            print(f"{result.stderr.decode('utf-8')}")
+        exit(1)
+
     if result.returncode == 0:
         print(f"[+] Feature enabled: {feature_name}")
     else:

@@ -1,0 +1,9 @@
+{
+    "expose": [
+        "Desktop/flatpak",
+    ],
+
+    "descriptions": {
+
+    }
+}

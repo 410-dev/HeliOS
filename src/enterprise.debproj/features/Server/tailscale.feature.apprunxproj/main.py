@@ -19,8 +19,9 @@ def main(args: list[str]) -> int:
 
         tailscale_source: PackagerSource = PackagerSource("tailscale")
         tailscale_source.signed = True
-        tailscale_source.repo_url_path = f"https://pkgs.tailscale.com/stable/ubuntu/{ubuntu_distro}.tailscale-keyring.list"
+        tailscale_source.repo_url_path = f"https://pkgs.tailscale.com/stable/ubuntu"
         tailscale_source.keyring_path = "/usr/share/keyrings/tailscale-archive-keyring.gpg"
+        tailscale_source.scope = "resolute main"
         tailscale_source.download_keyring(f"https://pkgs.tailscale.com/stable/ubuntu/{ubuntu_distro}.noarmor.gpg")
 
         installer.add_packager_source(tailscale_source)

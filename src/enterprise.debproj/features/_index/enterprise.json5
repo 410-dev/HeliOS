@@ -2,14 +2,14 @@
     "expose": [
         // Server related,
         "Server/tailscale",
-        "Server/cloudflared",
-        "Server/ngrok",
-        "Server/pyhttpd",
+//        "Server/cloudflared",
+//        "Server/ngrok",
+//        "Server/pyhttpd",
 
         // Enterprise features
-        "Enterprise/snapshot",
+//        "Enterprise/snapshot",
         "Enterprise/hypervisor",
-        "Enterprise/reachsphere"
+//        "Enterprise/reachsphere"
     ],
 
     "descriptions": {
