@@ -385,6 +385,22 @@ class Config(UserDict, ConfigBase):
         return data
 
     @classmethod
+    def _find_none_paths(cls, obj: dict, path="root"):
+        results = []
+        if obj is None:
+            results.append(path)
+        elif isinstance(obj, dict):
+            for key, value in obj.items():
+                results.extend(cls._find_none_paths(value, f"{path}.{key}"))
+        elif isinstance(obj, list):
+            for index, value in enumerate(obj):
+                results.extend(cls._find_none_paths(value, f"{path}[{index}]"))
+        elif isinstance(obj, tuple):
+            for index, value in enumerate(obj):
+                results.extend(cls._find_none_paths(value, f"{path}[{index}]"))
+        return results
+
+    @classmethod
     def _dump_structured_file(cls, path: str, data: dict) -> str:
         lower_path = path.lower()
 
@@ -392,9 +408,13 @@ class Config(UserDict, ConfigBase):
             return json.dumps(data, indent=4, ensure_ascii=False)
         if lower_path.endswith(cls._TOML_EXTENSIONS):
             cls._require_toml_writer()
+            if len(cls._find_none_paths(data)) > 0:
+                raise ValueError(f"TOML 포맷은 None 값을 지원하지 않습니다. None 값이 발견된 경로: {cls._find_none_paths(data)}")
             return tomli_w.dumps(data)
         if lower_path.endswith(cls._YAML_EXTENSIONS):
             cls._require_yaml()
+            if len(cls._find_none_paths(data)) > 0:
+                raise ValueError(f"YAML 포맷은 None 값을 지원하지 않습니다. None 값이 발견된 경로: {cls._find_none_paths(data)}")
             return yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
 
         raise ValueError(f"Unsupported config file format: {path}")

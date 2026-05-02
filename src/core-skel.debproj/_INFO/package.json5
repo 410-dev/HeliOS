@@ -11,6 +11,8 @@
         "python3-inotify",
         "python3-pyinotify",
         "python3-packaging",
+        "python3-tomli",
+        "python3-tomli-w",
         "openjdk-25-jre",
         "net-tools",
         "libnotify-bin",

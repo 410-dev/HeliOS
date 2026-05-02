@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 import oscore.libuser as libuser
-
+from oscore.libjson5 import load
 from oscore.libconfig import Config
 
 # Usage
@@ -105,7 +105,8 @@ def enable():
         print(f"[-] Failed to enable feature: {feature_name}")
         exit(1)
 
-    config_dat = config.get(feature_name, {}).update({"enabled": True})
+    config_dat = config.get(feature_name, {})
+    config_dat.update({"enabled": True})
     config[feature_name] = config_dat
     config.sync()
 
@@ -139,10 +140,46 @@ def disable():
         print(f"[-] Failed to disable feature: {feature_name}")
         exit(1)
 
-    config_dat = config.get(feature_name, {}).update({"enabled": False})
+    config_dat = config.get(feature_name, {})
+    config_dat.update({"enabled": False})
     config[feature_name] = config_dat
     config.sync()
 
+
+def list_features():
+    # Two sections
+    #   {{features}}/*.feature.apprunx (List all files)
+    #   {{features}}/_index/*.json5    (Merge update all files)
+    #
+    # For index files, it should contain an array named "expose".
+
+    apprunx_features: list[str] = []
+    index_features: dict = {}
+
+    for entry in os.listdir(repo_path):
+        if entry.endswith(".feature.apprunx"):
+            feature_name = entry[:-len(".feature.apprunx")]
+            apprunx_features.append(feature_name)
+
+    for entry in os.listdir(os.path.join(repo_path, "_index")):
+        if entry.endswith(".json5"):
+            dat: dict = load(os.path.join(repo_path, "_index", entry))
+            index_features.update(dat)
+
+    print_index: int = 1
+    print("[*] Available features:")
+    for feature_name in sorted(set(apprunx_features) | set(index_features.keys())):
+        enabled: bool = False
+        if feature_name in index_features.keys():
+            enabled = index_features[feature_name].get("enabled", False)
+        elif feature_name in apprunx_features:
+            # If not in index, then check if it is enabled by registry.
+            config: Config = Config("os.helios.features.EnabledList", enforce_global=True).fetch()
+            enabled = config.get(feature_name, {}).get("enabled", False)
+
+        status: str = "Enabled" if enabled else "Disabled"
+        print(f"  {print_index}. {feature_name}: {status}")
+        print_index += 1
 
 def print_usage():
     script = os.path.basename(sys.argv[0])
@@ -153,6 +190,7 @@ def print_usage():
     print("  update-repository  Rebuild package index and run apt update")
     print("  enable             Enable feature")
     print("  disable            Disable feature")
+    print("  list               List all features")
 
 # Main
 if len(sys.argv) < 2:
@@ -172,6 +210,8 @@ match command:
         enable()
     case "disable":
         disable()
+    case "list":
+        list_features()
     case _:
         print(f"[-] Unknown command: {command}")
         print_usage()
