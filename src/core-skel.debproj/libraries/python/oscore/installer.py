@@ -109,7 +109,7 @@ class Installer:
 
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             for line in proc.stdout:
-                print(line.strip())
+                print(line)
             exit_code = proc.wait()
             self._process.append({
                 "type": "packager",
@@ -357,7 +357,7 @@ class Installer:
     def exec_shell_with_exit_code(self, install_command: list[str], revert_command: list[str]) -> int:
         proc = subprocess.Popen(install_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in proc.stdout:
-            print(line.strip())
+            print(line)
         returncode = proc.wait()
         self._process.append({
             "type": "shell",

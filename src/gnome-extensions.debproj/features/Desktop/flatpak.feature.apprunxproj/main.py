@@ -1,5 +1,5 @@
 import sys
-from oscore.installer import Installer
+from oscore.installer import Installer, PackagerSource
 from AppContext import AppContext
 
 context = AppContext()
@@ -13,7 +13,13 @@ def main(args: list[str]) -> int:
         installer.refresh_sources()
         installer.install_package(["flatpak"])
         installer.install_package(["gnome-software-plugin-flatpak"])
-        installer.add_packager_source("flathub", "https://flathub.org/repo/flathub.flatpakrepo", "", "flatpak")
+
+        flatpak_source = PackagerSource("flathub")
+        flatpak_source.scope = ""
+        flatpak_source.repo_url_path = "https://flathub.org/repo/flathub.flatpakrepo"
+        flatpak_source.trusted = True
+
+        installer.add_packager_source(flatpak_source, "flatpak")
         installer.commit_receipt()
         return 0
     elif "disable" in args:

@@ -1,7 +1,7 @@
 import subprocess
 import sys
 import oscore.libuser as libuser
-from oscore.installer import Installer, PackagerSource
+from oscore.installer import Installer
 from AppContext import AppContext
 
 context = AppContext()
@@ -12,8 +12,10 @@ def compatibility():
     cmd = ["lscpu"]
     look_for = "Virtualization"
     try:
-        result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        if look_for in result.stdout or look_for in result.stderr:
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        stdout, stderr = proc.communicate()
+        print(stdout)
+        if look_for in stdout or look_for in stderr:
             print(f"[+] Virtualization support found.")
             return True
         else:

@@ -100,7 +100,7 @@ def enable():
     try:
         proc = subprocess.Popen(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in proc.stdout:
-            print(line.strip())
+            print(line)
         exit_code: int = proc.wait()
     except subprocess.CalledProcessError as e:
         print(f"[-] Command failed: {e}")
@@ -145,7 +145,7 @@ def disable():
     try:
         proc = subprocess.Popen(["apprun", apprunx_path, "disable"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in proc.stdout:
-            print(line.strip())
+            print(line)
         exit_code: int = proc.wait()
     except subprocess.CalledProcessError as e:
         print(f"[-] Command failed: {e}")
@@ -175,7 +175,8 @@ def list_features():
     for entry in os.listdir(os.path.join(repo_path, "_index")):
         if entry.endswith(".json5"):
             dat: dict = load(os.path.join(repo_path, "_index", entry))
-            index_features.update(dat)
+            index_features.setdefault("expose", []).extend(dat["expose"])
+            index_features.setdefault("description", {}).update(dat["description"])
 
     print_index: int = 1
     print("[*] Available features:")
