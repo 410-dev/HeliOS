@@ -18,12 +18,15 @@ class PackagerSource:
 
     def _invoke_add_source(self, packager: str) -> bool:
         if packager == "apt":
-            with open(f"/etc/apt/sources.list.d/{self.name}.list", "w") as fout:
-                fout.write(self._apt_string())
+            try:
+                with open(f"/etc/apt/sources.list.d/{self.name}.list", "w") as fout:
+                    fout.write(self._apt_string())
+            except Exception as e:
+                print(f"Failed to add APT source: {e}")
+                return False
             return True
         elif packager == "flatpak":
-            subprocess.run(["flatpak", "remote-add", "--if-not-exists", self.name, self.repo_url_path], check=True)
-            return True
+            return 0 == subprocess.Popen(["flatpak", "remote-add", "--if-not-exists", self.name, self.repo_url_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
 
         return False
 
@@ -104,16 +107,17 @@ class Installer:
             if packages is not None:
                 cmd.extend(packages)
 
-            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            exit_code = proc.wait()
             self._process.append({
                 "type": "packager",
                 "packager": packager,
                 "instruction": instruction,
                 "packages": packages if packages is not None else [],
-                "result": result.returncode,
+                "result": exit_code,
                 "message": "executed"
             })
-            return self._handle_exit(result.returncode == expected_exit_code, f"Failed to execute packager command: {packager}. Output: {result.stdout}, Error: {result.stderr}")
+            return self._handle_exit(exit_code == expected_exit_code, f"Failed to execute packager command: {packager}. Exited: {exit_code}")
 
         else:
             print(f"Instruction '{instruction}' is not supported for packager: {packager}")
@@ -349,15 +353,16 @@ class Installer:
             return self._handle_exit(False, f"Failed to extract archive: {e}")
 
     def exec_shell_with_exit_code(self, install_command: list[str], revert_command: list[str]) -> int:
-        result = subprocess.run(install_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        proc = subprocess.Popen(install_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        returncode = proc.wait()
         self._process.append({
             "type": "shell",
             "install_command": install_command,
             "revert_command": revert_command,
-            "result": result.returncode,
+            "result": returncode,
             "message": "executed"
         })
-        return result.returncode
+        return returncode
 
     def exec_shell(self, install_command: list[str], revert_command: list[str], expected_exit_code: int = 0) -> bool:
         result = self.exec_shell_with_exit_code(install_command, revert_command)

@@ -42,23 +42,22 @@ def update_repository():
     try:
         # Packages 파일 생성
         with open(packages_path, "w") as fout:
-            subprocess.run(
+            subprocess.Popen(
                 ["dpkg-scanpackages", "--multiversion", "."],
                 cwd=repo_path,
                 stdout=fout,
                 stderr=subprocess.PIPE,
-                check=True
-            )
+                text=True
+            ).wait()
 
         # Packages.gz 생성
         with open(packages_path, "rb") as fin, \
              open(packages_path + ".gz", "wb") as fout:
-            subprocess.run(
+            subprocess.Popen(
                 ["gzip", "-9c"],
                 stdin=fin,
-                stdout=fout,
-                check=True
-            )
+                stdout=fout
+            ).wait()
 
         print("[+] Package index updated.")
 
@@ -97,23 +96,15 @@ def enable():
         print(f"[-] Feature already enabled: {feature_name}")
         exit(1)
 
-    print(f"[*] Enabling feature (apprunx mode): {feature_name}")
+    print(f"[*] Enabling feature: {feature_name}")
     try:
-        result = subprocess.run(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, capture_output=True)
+        proc = subprocess.Popen(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        exit_code: int = proc.wait()
     except subprocess.CalledProcessError as e:
         print(f"[-] Command failed: {e}")
-        print(f"Subprocess produced:")
-        if result is None:
-            print("Nothing")
-        else:
-            print("====stdout====")
-            print(f"{result.stdout.decode('utf-8')}")
-            print("")
-            print("====stderr====")
-            print(f"{result.stderr.decode('utf-8')}")
         exit(1)
 
-    if result.returncode == 0:
+    if exit_code == 0:
         print(f"[+] Feature enabled: {feature_name}")
     else:
         print(f"[-] Failed to enable feature: {feature_name}")
@@ -148,9 +139,15 @@ def disable():
         print(f"[-] Feature already disabled: {feature_name}")
         exit(1)
 
-    print(f"[*] Disabling feature (apprunx mode): {feature_name}")
-    result = subprocess.run(["apprun", apprunx_path, "disable"], check=True)
-    if result.returncode == 0:
+    print(f"[*] Disabling feature: {feature_name}")
+    try:
+        proc = subprocess.Popen(["apprun", apprunx_path, "disable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        exit_code: int = proc.wait()
+    except subprocess.CalledProcessError as e:
+        print(f"[-] Command failed: {e}")
+        exit(1)
+
+    if exit_code == 0:
         print(f"[+] Feature disabled: {feature_name}")
     else:
         print(f"[-] Failed to disable feature: {feature_name}")
