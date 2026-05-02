@@ -1,0 +1,14 @@
+[
+    {
+        "index": -1,
+        "command": "frameworkctl"
+    },
+    {
+        "index": 0,
+        "param_name": "Framework list",
+        "action": "dynamic-list",
+        "available": [
+            "find", "/usr/lib/", "-name", "*.framework", "-printf", "%f\n"
+        ]
+    }
+]

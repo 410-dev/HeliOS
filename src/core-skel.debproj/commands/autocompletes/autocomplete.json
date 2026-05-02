@@ -1,0 +1,14 @@
+[
+    {
+        "index": -1,
+        "command": "autocomplete"
+    },
+    {
+        "index": 0,
+        "param_name": "Verbose",
+        "action": "static-list",
+        "available": [
+            "-v"
+        ]
+    }
+]

@@ -172,6 +172,8 @@ def list_features():
     index_features: dict = {}
     locale: str = os.environ.get("LOCALE", "en").lower()[:2] # Get only first two characters
 
+    silent = "--silent" in sys.argv
+
     for entry in os.listdir(os.path.join(repo_path, "_index")):
         if entry.endswith(".json5"):
             dat: dict = load(os.path.join(repo_path, "_index", entry))
@@ -179,21 +181,32 @@ def list_features():
             index_features.setdefault("description", {}).update(dat.get("description", {}))
 
     print_index: int = 1
-    print("[*] Available features:")
+
+    if not silent:
+        print("[*] Available features:")
 
     # Read registry
     config: Config = Config("os.helios.features.EnabledList", enforce_global=True).fetch()
     enabled_features = {key for key, value in config.items() if value.get("enabled") == True}
 
     for feature_name in sorted(set(index_features.get("expose", []))):
-        status: str = "Enabled" if feature_name in enabled_features else "Disabled"
 
-        description = index_features.get("description", {}).get(feature_name, {}).get(locale, "")
+        if not silent:
+            status: str = "Enabled" if feature_name in enabled_features else "Disabled"
+            description = index_features.get("description", {}).get(feature_name, {}).get(locale, "")
+        else:
+            status: str = ""
+            description = ""
+
 
         if len(description) > 0:
             description = f": {description}"
 
-        print(f"  {print_index}. {feature_name} [{status}]{description}")
+        if not silent:
+            print(f"  {print_index}. {feature_name} [{status}]{description}")
+        else:
+            print(feature_name)
+
         print_index += 1
 
 def print_usage():

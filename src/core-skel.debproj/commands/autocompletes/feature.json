@@ -1,0 +1,29 @@
+[
+    {
+        "index": -1,
+        "command": "feature"
+    },
+    {
+        "index": 0,
+        "param_name": "Action",
+        "action": "static-list",
+        "available": [
+            "enable", "disable", "list"
+        ]
+    },
+    {
+        "index": 1,
+        "param_name": "",
+        "action": "dynamic-list",
+        "available": [
+            "feature", "list", "--silent"
+        ],
+        "prerequisite": {
+            "Action": {
+                "any_of": [
+                    "enable", "disable"
+                ]
+            }
+        }
+    }
+]

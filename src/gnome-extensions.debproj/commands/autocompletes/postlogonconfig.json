@@ -1,0 +1,30 @@
+[
+    {
+        "index": -1,
+        "command": "postlogonconfig"
+    },
+    {
+        "index": 0,
+        "param_name": "username",
+        "action": "static-list",
+        "available": [
+            "--user="
+        ]
+    },
+    {
+        "index": 1,
+        "param_name": "script",
+        "action": "static-list",
+        "available": [
+            "--script="
+        ]
+    },
+    {
+        "index": 3,
+        "param_name": "permanent",
+        "action": "static-list",
+        "available": [
+            "--perm"
+        ]
+    }
+]

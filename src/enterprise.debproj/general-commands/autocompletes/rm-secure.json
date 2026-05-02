@@ -1,0 +1,44 @@
+[
+    {
+        "index": -1,
+        "command": "interface"
+    },
+    {
+        "index": [0, 3],
+        "param_name": "options",
+        "action": "static-list",
+        "available": [
+            "--iterations", "--type"
+        ]
+    },
+    {
+        "index": [1, 4],
+        "param_name": "iterations",
+        "action": "static-list",
+        "available": [
+            "3", "5", "7"
+        ],
+        "prerequisite": {
+            "options": {
+                "any_of": [
+                    "--iterations"
+                ]
+            }
+        }
+    },
+    {
+        "index": [1, 4],
+        "param_name": "type",
+        "action": "static-list",
+        "available": [
+            "random", "zero"
+        ],
+        "prerequisite": {
+            "options": {
+                "any_of": [
+                    "--type"
+                ]
+            }
+        }
+    }
+]

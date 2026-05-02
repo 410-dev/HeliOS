@@ -1,0 +1,14 @@
+[
+    {
+        "index": -1,
+        "command": "interface"
+    },
+    {
+        "index": 0,
+        "param_name": "type",
+        "action": "static-list",
+        "available": [
+            "gui", "cli"
+        ]
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "index": -1,
+        "command": "request-reboot"
+    },
+    {
+        "index": 0,
+        "param_name": "message",
+        "action": "static-list",
+        "available": [
+            "message"
+        ]
+    }
+]
