@@ -1,0 +1,30 @@
+[
+    {
+        "index": -1,
+        "command": "chuserface"
+    },
+    {
+        "index": 0,
+        "param_name": "username",
+        "action": "dynamic-list",
+        "available": [
+            "whoami"
+        ]
+    },
+    {
+        "index": 1,
+        "param_name": "image_path",
+        "action": "static-list",
+        "available": [
+            "image_path"
+        ]
+    },
+    {
+        "index": 3,
+        "param_name": "nocopyflag",
+        "action": "static-list",
+        "available": [
+            "--no-copy-to-home"
+        ]
+    }
+]
