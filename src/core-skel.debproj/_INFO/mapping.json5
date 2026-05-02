@@ -7,5 +7,6 @@
     "root-skel": "/",
     "commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
     "commands/exec": "/usr/bin",
-    "commands/manuals": "/usr/lib/helios/commands/manuals"
+    "commands/manuals": "/usr/lib/helios/commands/manuals",
+    "useradd-hooks": "/etc/shadow-maint/useradd-post.d"
 }

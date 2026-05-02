@@ -293,7 +293,7 @@ class Installer:
 
     def exec_shell(self, install_command: list[str], revert_command: list[str], expected_exit_code: int = 0) -> bool:
         result = self.exec_shell_with_exit_code(install_command, revert_command)
-        return self._handle_exit(result == expected_exit_code, f"Failed to execute shell command: {' '.join(install_command)}. Output: {result.stdout}, Error: {result.stderr}")
+        return self._handle_exit(result == expected_exit_code, f"Failed to execute shell command: {' '.join(install_command)}. Exited: {result}")
 
     def progress(self) -> float:
         if self.total_processes == 0:
