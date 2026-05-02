@@ -8,6 +8,7 @@ context.ensure_privileged()
 
 def main(args: list[str]) -> int:
     installer = Installer("os.helios.feature.flatpak", True, "apt")
+    installer.raise_on_error()
     if "enable" in args:
         installer.refresh()
         installer.install(["flatpak"])

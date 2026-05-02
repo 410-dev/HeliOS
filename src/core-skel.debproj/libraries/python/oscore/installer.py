@@ -5,11 +5,10 @@ import json
 import time
 import oscore.libatomic as libatomic
 import tempfile
-from pygments.lexer import default
 
 class Installer:
 
-    def __init__(self, package_id: str, require_root: bool, default_packager: str, total_processes: int = 0):
+    def __init__(self, package_id: str, require_root: bool, default_packager: str, total_processes: int = 0, raise_on_error: bool = True):
 
         if require_root:
             if not os.geteuid() == 0:
@@ -21,6 +20,7 @@ class Installer:
         self.commit_path = f"/var/lib/oscore/receipts/{self.package_id}"
         self._process: list[dict] = []
         self._logs: dict[int, str] = {}
+        self._raise_on_error = raise_on_error
 
         self._packager_commandlines: dict[str, dict[str, list[str]]] = {
             "apt": {
@@ -40,11 +40,25 @@ class Installer:
             }
         }
 
+    def raise_on_error(self, set_to: bool = True):
+        self._raise_on_error = set_to
+
     def log(self, message: str) -> None:
         self._logs[len(self._process)] = message
         print(message)
 
-    def _exec_instruct(self, packager: str, instruction: str, packages: list[str] = None) -> bool:
+    def _handle_exit(self, success: bool, message: str) -> bool | None:
+        if not success and self._raise_on_error:
+            raise Exception(message)
+        else:
+            return success
+
+    def _exec_instruct(self, packager: str, instruction: str, packages: list[str] = None, expected_exit_code: int = 0) -> bool:
+
+        # Packager None = Default
+        if packager is None:
+            packager = self.default_packager
+
         cmd = self._packager_commandlines.get(packager, {}).get(instruction, [])
         if cmd:
             if packages is not None:
@@ -59,7 +73,7 @@ class Installer:
                 "result": result.returncode,
                 "message": "executed"
             })
-            return result.returncode == 0
+            return self._handle_exit(result.returncode == expected_exit_code, f"Failed to execute packager command: {packager}. Output: {result.stdout}, Error: {result.stderr}")
 
         else:
             print(f"Instruction '{instruction}' is not supported for packager: {packager}")
@@ -71,16 +85,16 @@ class Installer:
                 "result": -1,
                 "message": "unsupported"
             })
-            return False
+            return self._handle_exit(False, f"Failed to execute packager command: {packager}")
 
-    def install(self, packages: list[str], packager: str = default) -> bool:
-        return self._exec_instruct(packager, "install", packages)
+    def install(self, packages: list[str], packager: str = None, expected_exit_code: int = 0) -> bool:
+        return self._exec_instruct(packager, "install", packages, expected_exit_code=expected_exit_code)
 
-    def uninstall(self, packages: list[str], packager: str = default) -> bool:
-        return self._exec_instruct(packager, "remove", packages)
+    def uninstall(self, packages: list[str], packager: str = None, expected_exit_code: int = 0) -> bool:
+        return self._exec_instruct(packager, "remove", packages, expected_exit_code=expected_exit_code)
 
-    def refresh(self, packager: str = default) -> bool:
-        return self._exec_instruct(packager, "refresh")
+    def refresh(self, packager: str = None, expected_exit_code: int = 0) -> bool:
+        return self._exec_instruct(packager, "refresh", expected_exit_code=expected_exit_code)
 
     def symlink(self, target: str, link_name: str) -> bool:
         if os.path.exists(link_name):
@@ -102,7 +116,7 @@ class Installer:
                 "result": -1,
                 "message": "failed"
             })
-            return False
+            return self._handle_exit(False, f"Failed to create symlink: {link_name} -> {target}")
 
     def _file_ops(self, instruction: str, source: str, destination: str | None) -> bool:
         is_directory = False
@@ -124,7 +138,7 @@ class Installer:
                 os.remove(source)
         else:
             print(f"Unsupported file operation: {instruction}")
-            return False
+            return self._handle_exit(False, f"Unsupported file operation: {instruction}")
 
         self._process.append({
             "type": "file_ops",
@@ -148,7 +162,7 @@ class Installer:
         if instruction == "replace":
             if old_str is None or new_str is None:
                 print("Both 'old_str' and 'new_str' must be provided for replace operation.")
-                return False
+                return self._handle_exit(False, f"Both 'old_str' and 'new_str' must be provided.")
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
@@ -173,7 +187,7 @@ class Installer:
                     "result": -1,
                     "message": f"failed: {e}"
                 })
-                return False
+                return self._handle_exit(False, f"Failed to perform string operation: {e}")
 
         elif instruction == "write":
             try:
@@ -197,11 +211,11 @@ class Installer:
                     "result": -1,
                     "message": f"failed: {e}"
                 })
-                return False
+                return self._handle_exit(False, f"Failed to perform string operation: {e}")
 
         else:
             print(f"Unsupported string operation: {instruction}")
-            return False
+            return self._handle_exit(False, f"Unsupported string operation: {instruction}")
 
     def replace_string(self, file_path: str, old_str: str, new_str: str) -> bool:
         return self.string_ops("replace", file_path, old_str, new_str)
@@ -220,7 +234,7 @@ class Installer:
                 shutil.unpack_archive(archive_path, temp_dir, compression)
             else:
                 print(f"Unsupported compression format: {compression}")
-                return False
+                return self._handle_exit(False, f"Unsupported compression format: {compression}")
 
             # Build file list
             file_list: dict[str, str] = {} # destination merged file path is key, value is either file or dir
@@ -264,9 +278,9 @@ class Installer:
                 "result": -1,
                 "message": f"failed: {e}"
             })
-            return False
+            return self._handle_exit(False, f"Failed to extract archive: {e}")
 
-    def exec_shell(self, install_command: list[str], revert_command: list[str]) -> int:
+    def exec_shell_with_exit_code(self, install_command: list[str], revert_command: list[str]) -> int:
         result = subprocess.run(install_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         self._process.append({
             "type": "shell",
@@ -276,6 +290,10 @@ class Installer:
             "message": "executed"
         })
         return result.returncode
+
+    def exec_shell(self, install_command: list[str], revert_command: list[str], expected_exit_code: int = 0) -> bool:
+        result = self.exec_shell_with_exit_code(install_command, revert_command)
+        return self._handle_exit(result == expected_exit_code, f"Failed to execute shell command: {' '.join(install_command)}. Output: {result.stdout}, Error: {result.stderr}")
 
     def progress(self) -> float:
         if self.total_processes == 0:
@@ -304,7 +322,7 @@ class Installer:
 
         return receipt
 
-    def commit_receipt(self):
+    def commit_receipt(self) -> None:
         processes = self.make_receipt()
         receipt = {
             "time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
