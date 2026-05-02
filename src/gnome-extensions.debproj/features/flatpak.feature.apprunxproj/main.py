@@ -10,10 +10,10 @@ def main(args: list[str]) -> int:
     installer = Installer("os.helios.feature.flatpak", True, "apt")
     installer.raise_on_error()
     if "enable" in args:
-        installer.refresh()
-        installer.install(["flatpak"])
-        installer.install(["gnome-software-plugin-flatpak"])
-        installer.exec_shell(["flatpak", "remote-add", "--if-not-exists", "flathub", "https://flathub.org/repo/flathub.flatpakrepo"], [])
+        installer.refresh_sources()
+        installer.install_package(["flatpak"])
+        installer.install_package(["gnome-software-plugin-flatpak"])
+        installer.add_packager_source("flathub", "https://flathub.org/repo/flathub.flatpakrepo", "", "flatpak")
         installer.commit_receipt()
         return 0
     elif "disable" in args:

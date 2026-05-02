@@ -5,6 +5,46 @@ import json
 import time
 import oscore.libatomic as libatomic
 import tempfile
+import requests
+
+class PackagerSource:
+    def __init__(self, name: str) -> None:
+        self.name: str = name
+        self.trusted = False
+        self.signed = False
+        self.keyring_path = None
+        self.repo_url_path = None
+        self.scope = None
+
+    def _invoke_add_source(self, packager: str) -> bool:
+        if packager == "apt":
+            with open(f"/etc/apt/sources.list.d/{self.name}.list", "w") as fout:
+                fout.write(self._apt_string())
+            return True
+        elif packager == "flatpak":
+            subprocess.run(["flatpak", "remote-add", "--if-not-exists", self.name, self.repo_url_path], check=True)
+            return True
+
+        return False
+
+    def _apt_string(self) -> str:
+        if self.repo_url_path is None:
+            raise ValueError("Repository path is not set.")
+        return f"deb [{'trusted=yes ' if self.trusted else ''}{'signed-by=' + self.keyring_path if self.signed and self.keyring_path else ''}] {self.repo_url_path} {self.scope}\n"
+
+    def download_keyring(self, keyring_url: str) -> bool:
+        if self.keyring_path is None:
+            raise ValueError("Keyring path is not set.")
+
+        try:
+            response = requests.get(keyring_url)
+            response.raise_for_status()
+            with open(self.keyring_path, "wb") as f:
+                f.write(response.content)
+            return True
+        except Exception as e:
+            print(f"Failed to download keyring: {e}")
+            return False
 
 class Installer:
 
@@ -87,14 +127,42 @@ class Installer:
             })
             return self._handle_exit(False, f"Failed to execute packager command: {packager}")
 
-    def install(self, packages: list[str], packager: str = None, expected_exit_code: int = 0) -> bool:
+    def install_package(self, packages: list[str], packager: str = None, expected_exit_code: int = 0) -> bool:
         return self._exec_instruct(packager, "install", packages, expected_exit_code=expected_exit_code)
 
-    def uninstall(self, packages: list[str], packager: str = None, expected_exit_code: int = 0) -> bool:
+    def uninstall_package(self, packages: list[str], packager: str = None, expected_exit_code: int = 0) -> bool:
         return self._exec_instruct(packager, "remove", packages, expected_exit_code=expected_exit_code)
 
-    def refresh(self, packager: str = None, expected_exit_code: int = 0) -> bool:
+    def refresh_sources(self, packager: str = None, expected_exit_code: int = 0) -> bool:
         return self._exec_instruct(packager, "refresh", expected_exit_code=expected_exit_code)
+
+    def add_packager_source(self, repo: PackagerSource, packager: str = None) -> bool:
+        if packager is None:
+            packager = self.default_packager
+
+        try:
+            result = repo._invoke_add_source(packager)
+
+            self._process.append({
+                "type": "packager-source",
+                "packager": packager,
+                "instruction": "add",
+                "result": result,
+                "message": "added"
+            })
+
+        except Exception as e:
+            print(f"Failed to add packager source: {e}")
+            result = False
+            self._process.append({
+                "type": "packager-source",
+                "packager": packager,
+                "instruction": "add",
+                "result": result,
+                "message": f"Failed to add packager source: {e}"
+            })
+
+        return self._handle_exit(result, f"Adding packager source is not implemented yet: {repo.repo_url_path} for {packager}")
 
     def symlink(self, target: str, link_name: str) -> bool:
         if os.path.exists(link_name):

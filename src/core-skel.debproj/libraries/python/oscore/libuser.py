@@ -42,3 +42,11 @@ def is_current_user_privileged_as_admin() -> bool:
 
 def is_current_user_root() -> bool:
     return os.getuid() == 0
+
+
+def list_nosys_users() -> list[str]:
+    nosys_users = []
+    for p in pwd.getpwall():
+        if p.pw_shell == "/usr/sbin/nologin" or p.pw_shell == "/bin/false":
+            nosys_users.append(p.pw_name)
+    return nosys_users

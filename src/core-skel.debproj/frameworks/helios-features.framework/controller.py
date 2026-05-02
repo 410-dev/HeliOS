@@ -84,7 +84,7 @@ def enable():
 
     # If apprunx file exists, then it is not so simple as installing local package.
     # If toml file, then read it and install the packages.
-    apprunx_path: str = f"{{features}}/{feature_name}.feature.apprunx"
+    apprunx_path: str = f"{repo_path}/{feature_name}.feature.apprunx"
     if not os.path.isfile(apprunx_path):
         print(f"[-] Feature package not found: {feature_name}")
         exit(1)
@@ -98,7 +98,7 @@ def enable():
         exit(1)
 
     print(f"[*] Enabling feature (apprunx mode): {feature_name}")
-    result = subprocess.run(["apprun", apprunx_path, "enable"], check=True)
+    result = subprocess.run(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
     if result.returncode == 0:
         print(f"[+] Feature enabled: {feature_name}")
     else:
@@ -119,10 +119,12 @@ def disable():
 
     # If apprunx file exists, then it is not so simple as installing local package.
     # If toml file, then read it and install the packages.
-    apprunx_path: str = f"{{features}}/{feature_name}.feature.apprunx"
+    apprunx_path: str = f"{repo_path}/{feature_name}.feature.apprunx"
+
     if not os.path.isfile(apprunx_path):
         print(f"[-] Feature package not found: {feature_name}")
         exit(1)
+
 
     # Read registry
     config: Config = Config("os.helios.features.EnabledList", enforce_global=True).fetch()
@@ -148,18 +150,12 @@ def disable():
 
 def list_features():
     # Two sections
-    #   {{features}}/*.feature.apprunx (List all files)
-    #   {{features}}/_index/*.json5    (Merge update all files)
+    #   {repo_path}/_index/*.json5    (Merge update all files)
     #
     # For index files, it should contain an array named "expose".
 
-    apprunx_features: list[str] = []
     index_features: dict = {}
-
-    for entry in os.listdir(repo_path):
-        if entry.endswith(".feature.apprunx"):
-            feature_name = entry[:-len(".feature.apprunx")]
-            apprunx_features.append(feature_name)
+    locale: str = os.environ.get("LOCALE", "en").lower()[:2] # Get only first two characters
 
     for entry in os.listdir(os.path.join(repo_path, "_index")):
         if entry.endswith(".json5"):
@@ -168,17 +164,20 @@ def list_features():
 
     print_index: int = 1
     print("[*] Available features:")
-    for feature_name in sorted(set(apprunx_features) | set(index_features.keys())):
-        enabled: bool = False
-        if feature_name in index_features.keys():
-            enabled = index_features[feature_name].get("enabled", False)
-        elif feature_name in apprunx_features:
-            # If not in index, then check if it is enabled by registry.
-            config: Config = Config("os.helios.features.EnabledList", enforce_global=True).fetch()
-            enabled = config.get(feature_name, {}).get("enabled", False)
 
-        status: str = "Enabled" if enabled else "Disabled"
-        print(f"  {print_index}. {feature_name}: {status}")
+    # Read registry
+    config: Config = Config("os.helios.features.EnabledList", enforce_global=True).fetch()
+    enabled_features = {key for key, value in config.items() if value.get("enabled") == True}
+
+    for feature_name in sorted(set(index_features.get("expose", []))):
+        status: str = "Enabled" if feature_name in enabled_features else "Disabled"
+
+        description = index_features.get("description", {}).get(feature_name, {}).get(locale, "")
+
+        if len(description) > 0:
+            description = f": {description}"
+
+        print(f"  {print_index}. {feature_name} [{status}]{description}")
         print_index += 1
 
 def print_usage():
