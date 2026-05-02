@@ -26,7 +26,7 @@ class PackagerSource:
                 return False
             return True
         elif packager == "flatpak":
-            return 0 == subprocess.Popen(["flatpak", "remote-add", "--if-not-exists", self.name, self.repo_url_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).wait()
+            return 0 == subprocess.Popen(["flatpak", "remote-add", "--if-not-exists", self.name, self.repo_url_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True).wait()
 
         return False
 
@@ -107,7 +107,9 @@ class Installer:
             if packages is not None:
                 cmd.extend(packages)
 
-            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            for line in proc.stdout:
+                print(line.strip())
             exit_code = proc.wait()
             self._process.append({
                 "type": "packager",
@@ -353,7 +355,9 @@ class Installer:
             return self._handle_exit(False, f"Failed to extract archive: {e}")
 
     def exec_shell_with_exit_code(self, install_command: list[str], revert_command: list[str]) -> int:
-        proc = subprocess.Popen(install_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        proc = subprocess.Popen(install_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in proc.stdout:
+            print(line.strip())
         returncode = proc.wait()
         self._process.append({
             "type": "shell",

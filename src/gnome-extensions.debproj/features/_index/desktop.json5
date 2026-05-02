@@ -4,6 +4,9 @@
     ],
 
     "descriptions": {
-
+        "Desktop/flatpak": {
+            "en": "Flatpak is a software utility for software deployment, application virtualization, and package management. It provides a sandbox environment in which users can run applications in isolation from the rest of the system.",
+            "ko": "Flatpak은 소프트웨어 배포, 애플리케이션 가상화 및 패키지 관리를 위한 소프트웨어 유틸리티입니다. 사용자가 시스템의 나머지 부분과 격리된 환경에서 애플리케이션을 실행할 수 있는 샌드박스 환경을 제공합니다."
+        }
     }
 }

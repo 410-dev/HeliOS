@@ -12,7 +12,7 @@ def compatibility():
     cmd = ["lscpu"]
     look_for = "Virtualization"
     try:
-        result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if look_for in result.stdout or look_for in result.stderr:
             print(f"[+] Virtualization support found.")
             return True

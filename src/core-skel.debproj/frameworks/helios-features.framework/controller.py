@@ -46,7 +46,7 @@ def update_repository():
                 ["dpkg-scanpackages", "--multiversion", "."],
                 cwd=repo_path,
                 stdout=fout,
-                stderr=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 text=True
             ).wait()
 
@@ -98,7 +98,9 @@ def enable():
 
     print(f"[*] Enabling feature: {feature_name}")
     try:
-        proc = subprocess.Popen(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        proc = subprocess.Popen(["apprun", apprunx_path, "enable"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in proc.stdout:
+            print(line.strip())
         exit_code: int = proc.wait()
     except subprocess.CalledProcessError as e:
         print(f"[-] Command failed: {e}")
@@ -141,7 +143,9 @@ def disable():
 
     print(f"[*] Disabling feature: {feature_name}")
     try:
-        proc = subprocess.Popen(["apprun", apprunx_path, "disable"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        proc = subprocess.Popen(["apprun", apprunx_path, "disable"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in proc.stdout:
+            print(line.strip())
         exit_code: int = proc.wait()
     except subprocess.CalledProcessError as e:
         print(f"[-] Command failed: {e}")
