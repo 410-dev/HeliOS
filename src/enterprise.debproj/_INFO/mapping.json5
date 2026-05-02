@@ -3,8 +3,8 @@
     "docs": "/usr/lib/helios/docs",
     "root-skel": "/",
     "gnome-context-menu-extensions": "/usr/share/nautilus-python/extensions",
-    "general-commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
-    "general-commands/exec": "/usr/bin",
-    "general-commands/manuals": "/usr/lib/helios/commands/manuals",
+    "commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
+    "commands/exec": "/usr/bin",
+    "commands/manuals": "/usr/lib/helios/commands/manuals",
     "features": "/usr/lib/helios/features"
 }
