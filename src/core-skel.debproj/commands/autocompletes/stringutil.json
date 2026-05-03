@@ -16,7 +16,7 @@
         "param_name": "input-simple-ops",
         "action": "static-list",
         "available": [
-            "original-text"
+            "<original-text>"
         ],
         "prerequisite": {
             "Actions": {
@@ -31,7 +31,7 @@
         "param_name": "input-replace",
         "action": "static-list",
         "available": [
-            "text-to-replace"
+            "<text-to-replace>"
         ],
         "prerequisite": {
             "Actions": {
@@ -95,7 +95,7 @@
         "param_name": "replace-with-value",
         "action": "static-list",
         "available": [
-            "replacement-text"
+            "<replacement-text>"
         ],
         "prerequisite": {
             "Actions": {
@@ -110,7 +110,7 @@
         "param_name": "postwork-var-simple-ops",
         "action": "static-list",
         "available": [
-            "variable-name"
+            "<variable-name>"
         ],
         "prerequisite": {
             "postwork-action-simple-ops": {
@@ -140,7 +140,7 @@
         "param_name": "replace-in-value",
         "action": "static-list",
         "available": [
-            "target-text"
+            "<target-text>"
         ],
         "prerequisite": {
             "Actions": {
@@ -186,7 +186,7 @@
         "param_name": "replace-postwork-var",
         "action": "static-list",
         "available": [
-            "variable-name"
+            "<variable-name>"
         ],
         "prerequisite": {
             "replace-postwork-action": {
