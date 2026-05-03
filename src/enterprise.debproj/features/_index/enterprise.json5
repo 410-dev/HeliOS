@@ -7,7 +7,7 @@
 //        "Server/pyhttpd",
 
         // Enterprise features
-//        "Enterprise/snapshot",
+        "Enterprise/snapshot",
         "Enterprise/hypervisor",
 //        "Enterprise/reachsphere"
     ],
