@@ -49,6 +49,17 @@ class PackagerSource:
             print(f"Failed to download keyring: {e}")
             return False
 
+    def serialize(self) -> dict:
+        return {
+            "name": self.name,
+            "trusted": self.trusted,
+            "signed": self.signed,
+            "keyring_path": self.keyring_path,
+            "repo_url_path": self.repo_url_path,
+            "scope": self.scope
+        }
+        
+
 class Installer:
 
     def __init__(self, package_id: str, require_root: bool, default_packager: str, total_processes: int = 0, raise_on_error: bool = True):
@@ -154,7 +165,8 @@ class Installer:
                 "packager": packager,
                 "instruction": "add",
                 "result": result,
-                "message": "added"
+                "message": "added",
+                "repo": repo.serialize()
             })
 
         except Exception as e:
