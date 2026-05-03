@@ -15,7 +15,7 @@ def compatibility():
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         stdout, stderr = proc.communicate()
         print(stdout)
-        if look_for in stdout or look_for in stderr:
+        if stdout is not None and look_for in stdout:
             print(f"[+] Virtualization support found.")
             return True
         else:
