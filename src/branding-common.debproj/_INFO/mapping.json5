@@ -1,4 +1,14 @@
 {
     // 여기의 K/V 를 소스코드에서 치환함. {{key}} -> value 로 치환
-    "root-skel": "/"
+    "root-skel": "/",
+    "logo-fastfetch": "/usr/share/fastfetch/logos",
+    "logo-start-button-yaru": "/usr/share/icons/Yaru/scalable/places",
+    "logo-pixmap-text": "/usr/share/pixmaps",
+    "logo-pixmap": "/usr/share/pixmaps",
+    "logo-pixmap-scalable": "/usr/share/pixmaps",
+    "logo-dist": "/usr/share/icons/hicolor/scalable/places",
+    "dconf-db": "/etc/dconf/db",
+    "dconf-profile": "/etc/dconf/profile",
+    "libgdm3": "/var/lib/gdm3",
+    "plymouth-themes": "/usr/share/plymouth/themes",
 }
