@@ -1,0 +1,9 @@
+{
+  "uuid": "clipboard-helper@helios.local",
+  "name": "Helios Clipboard Helper",
+  "description": "Forwards filtered GNOME session clipboard text to a local user-level bridge.",
+  "shell-version": [
+    "50"
+  ],
+  "url": "https://github.com/helios/clipboard-helper"
+}
