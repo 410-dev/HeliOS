@@ -1,3 +1,3 @@
 #!/bin/bash
 
-export PATH="$PATH:{{install}}/node/bin/"
+export PATH="$PATH:{{install}}/latest/bin/"

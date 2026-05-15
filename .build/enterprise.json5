@@ -9,7 +9,8 @@
         "branding-common",
         "branding-enterprise",
         "gnome-extensions",
-        "enterprise"
+        "enterprise",
+        "nodejs"
     ],
     "TextSubstitute": {
         "EDITION_DISPLAY": "Workstation Enterprise",

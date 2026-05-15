@@ -7,8 +7,11 @@ set -e
 
 echo "Building Gnome Clipboard extension... (Credit: https://github.com/foss-desk/gnome-clipboard)"
 cd /usr/share/gnome-shell/extensions
-unzip -o gnome-clipboard-main.zip -d gnome-clipboard@foss-desk
+unzip -o gnome-clipboard-main.zip -d gnome-clipboard@foss-desk.d
+mv gnome-clipboard@foss-desk.d/gnome-clipboard-main gnome-clipboard@foss-desk
+rm -r gnome-clipboard@foss-desk.d
 cd gnome-clipboard@foss-desk
+export PATH="$PATH:/usr/lib/node/latest/bin/"
 make install
 make enable
 
