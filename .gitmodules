@@ -4,3 +4,6 @@
 [submodule "src/gnome-extensions.debproj/gnome-shell-extensions/clipboard-history@alexsaveau.dev"]
 	path = src/gnome-extensions.debproj/gnome-shell-extensions/clipboard-history@alexsaveau.dev
 	url = https://github.com/SUPERCILEX/gnome-clipboard-history.git
+[submodule "src/gnome-extensions.debproj/gnome-shell-extensions/pinned-apps-in-appgrid"]
+	path = src/gnome-extensions.debproj/gnome-shell-extensions/pinned-apps-in-appgrid
+	url = https://github.com/brunos3d/pinned-apps-in-appgrid.git
