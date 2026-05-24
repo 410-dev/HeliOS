@@ -1,0 +1,44 @@
+[
+    {
+        "index": -1,
+        "command": "chwallpaper"
+    },
+    {
+        "index": 0,
+        "param_name": "username",
+        "action": "dynamic-list",
+        "available": [
+            "whoami"
+        ]
+    },
+    {
+        "index": 1,
+        "param_name": "image_path",
+        "action": "dynamic-list",
+        "available": [
+            "ls"
+        ]
+    },
+    {
+        "index": 3,
+        "param_name": "flag1",
+        "action": "static-list",
+        "available": [
+            "--no-copy-to-home",
+            "--no-dark-mode-suffix",
+            "--dark",
+            "--light"
+        ]
+    },
+    {
+        "index": 4,
+        "param_name": "flag2",
+        "action": "static-list",
+        "available": [
+            "--no-copy-to-home",
+            "--no-dark-mode-suffix",
+            "--dark",
+            "--light"
+        ]
+    }
+]
