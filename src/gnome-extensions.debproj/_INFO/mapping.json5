@@ -7,6 +7,7 @@
     "commands/autocompletes": "/usr/lib/helios/commands/autocompletes",
     "commands/exec": "/usr/bin",
     "commands/manuals": "/usr/lib/helios/commands/manuals",
+    "libraries/python": "/usr/lib/python3/dist-packages",
     "gnome-shell-extensions": "/usr/share/gnome-shell/extensions",
     "xdg-autostart": "/etc/xdg/autostart",
     "features": "/usr/lib/helios/features",
