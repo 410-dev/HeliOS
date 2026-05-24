@@ -134,8 +134,8 @@ def substitute_tree(root, subs, skip_dirs=None, verbose=False):
                 with open(fpath, "r", encoding="utf-8", errors="replace") as f:
                     content = f.read()
                 new_content = apply_subs(content, subs, verbose)
-                if new_content != content:
-                    with open(fpath, "w", encoding="utf-8") as f:
+                if new_content != content or "\r\n" in content:
+                    with open(fpath, "w", encoding="utf-8", newline="\n") as f:
                         f.write(new_content)
             except OSError:
                 pass
@@ -167,11 +167,14 @@ def process_executable_files(root):
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d != "DEBIAN"]
         for fname in list(filenames):
+
+            new_path: str = ""
+
             fpath = os.path.join(dirpath, fname)
             if fname.endswith(".bin.sh"):
                 new_path = os.path.join(dirpath, fname[: -len(".bin.sh")])
                 os.rename(fpath, new_path)
-                make_executable(new_path)
+
             elif fname.endswith(".py"):
                 try:
                     with open(fpath, "r", encoding="utf-8", errors="replace") as f:
@@ -179,7 +182,16 @@ def process_executable_files(root):
                     if first_line.startswith("#!/usr/bin/python3") or first_line.startswith("#!/usr/bin/env python3"):
                         new_path = os.path.join(dirpath, fname[: -len(".py")])
                         os.rename(fpath, new_path)
-                        make_executable(new_path)
+                except OSError:
+                    pass
+
+            if new_path and os.path.exists(new_path):
+                try:
+                    with open(new_path, "r", encoding="utf-8", errors="replace") as f:
+                        content = f.read()
+                    with open(new_path, "w", encoding="utf-8", newline="\n") as f:
+                        f.write(content)
+                    make_executable(new_path)
                 except OSError:
                     pass
 
