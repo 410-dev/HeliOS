@@ -1,0 +1,14 @@
+[
+    {
+        "index": -1,
+        "command": "enum-users"
+    },
+    {
+        "index": 0,
+        "param_name": "Multiliner",
+        "action": "static-list",
+        "available": [
+            "-1"
+        ]
+    }
+]
