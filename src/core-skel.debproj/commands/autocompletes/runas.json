@@ -1,0 +1,31 @@
+[
+    {
+        "index": -1,
+        "command": "runas"
+    },
+    {
+        "index": 0,
+        "param_name": "users",
+        "action": "dynamic-list",
+        "available": [
+            "enum-users",
+            "-1"
+        ]
+    },
+    {
+        "index": 1,
+        "param_name": "splitter",
+        "action": "static-list",
+        "available": [
+            "::"
+        ]
+    },
+    {
+        "index": 2,
+        "param_name": "command",
+        "action": "static-list",
+        "available": [
+            "whoami"
+        ]
+    }
+]
