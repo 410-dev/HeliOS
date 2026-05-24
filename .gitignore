@@ -5,6 +5,7 @@
 *.class
 *.pyc
 *.pyo
+.venv
 
 # Ignore build files
 output/
