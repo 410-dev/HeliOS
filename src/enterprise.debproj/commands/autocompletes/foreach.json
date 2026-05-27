@@ -1,0 +1,38 @@
+[
+    {
+        "index": -1,
+        "command": "foreach"
+    },
+    {
+        "index": 0,
+        "param_name": "slicer",
+        "action": "static-list",
+        "available": [
+            "\" \""
+        ]
+    },
+    {
+        "index": 1,
+        "param_name": "iterable",
+        "action": "static-list",
+        "available": [
+            "1 2 3"
+        ]
+    },
+    {
+        "index": 2,
+        "param_name": "splitter",
+        "action": "static-list",
+        "available": [
+            "::"
+        ]
+    },
+    {
+        "index": 3,
+        "param_name": "command",
+        "action": "static-list",
+        "available": [
+            "echo {index} {element}"
+        ]
+    }
+]
