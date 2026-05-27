@@ -6,7 +6,8 @@
 import sys
 import os
 import shutil
-import libpydbus
+import oscore.libuser as libuser
+from oscore.desktop.session import DBUSExecutionEnvironment as DBUSExec
 
 # 프로필 사진 사본 만들기 (.face)
 def copy_profile_picture_to_face(username: str, image: str) -> str:
@@ -58,7 +59,7 @@ def main():
         print("   --light: Set the image only for light mode. May not use with --dark")
         return 0
 
-    username = sys.argv[1]
+    username = sys.argv[1] if sys.argv[1] != "_" else libuser.current_username()
     picture_path = sys.argv[2]
     no_copy_to_home: bool = '--no-copy-to-home' in sys.argv or picture_path.startswith("/usr/share/backgrounds/")
     no_darkmode_suffix: bool = '--no-dark-mode-suffix' in sys.argv
@@ -76,10 +77,11 @@ def main():
     light_wallpaper, dark_wallpaper = get_paired_wallpaper_path(no_darkmode_suffix, updated_picture_path, theme_mode)
 
     try:
+        env: DBUSExec = DBUSExec(True, True, as_user=username)
         if light_wallpaper:
-            libpydbus.gsettings_set("org.gnome.desktop.background", "picture-uri", f"file://{light_wallpaper}", as_user=username)
+            env.gsettings_set("org.gnome.desktop.background", "picture-uri", f"file://{light_wallpaper}")
         if dark_wallpaper:
-            libpydbus.gsettings_set("org.gnome.desktop.background", "picture-uri-dark", f"file://{dark_wallpaper}", as_user=username)
+            env.gsettings_set("org.gnome.desktop.background", "picture-uri-dark", f"file://{dark_wallpaper}")
         return 0
     except Exception as e:
         print(e)
