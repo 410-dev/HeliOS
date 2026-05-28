@@ -6,20 +6,12 @@
 //        "Server/ngrok",
 //        "Server/pyhttpd",
 
-        // Enterprise features
-        "Enterprise/snapshot",
-        "Enterprise/hypervisor",
-//        "Enterprise/reachsphere"
     ],
 
     "descriptions": {
         "Server/tailscale": {
             "en": "Tailscale is a zero-config VPN. It allows you to connect your devices securely and easily, no matter where they are.",
             "ko": "Tailscale은 제로-컨피그 VPN입니다. 어디에 있든지 안전하고 쉽게 장치를 연결할 수 있습니다."
-        },
-        "Enterprise/hypervisor": {
-            "en": "Hypervisor is a feature that allows you to run virtual machines on your system. It provides a way to create and manage virtualized environments.",
-            "ko": "하이퍼바이저는 시스템에서 가상 머신을 실행할 수 있게 해주는 기능입니다. 가상화된 환경을 만들고 관리하는 방법을 제공합니다."
         }
     }
 }

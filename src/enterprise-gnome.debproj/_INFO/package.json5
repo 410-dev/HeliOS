@@ -1,0 +1,7 @@
+{
+    "name": "helios-enterprise-gnome",
+    "version": "{{VERSION}}",
+    "depends": [
+        "helios-enterprise={{VERSION}}"
+    ]
+}

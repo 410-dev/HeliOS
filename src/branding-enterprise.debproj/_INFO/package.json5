@@ -1,7 +1,0 @@
-{
-    "name": "helios-branding-enterprise",
-    "version": "{{VERSION}}",
-    "depends": [
-        "helios-branding-common={{VERSION}}"
-    ]
-}

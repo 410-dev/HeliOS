@@ -7,9 +7,9 @@
     "Build": [
         "core-skel",
         "branding-common",
-        "branding-enterprise",
         "gnome-extensions",
         "enterprise",
+        "enterprise-gnome",
         "nodejs"
     ],
     "TextSubstitute": {

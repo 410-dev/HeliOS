@@ -1,0 +1,14 @@
+{
+    "expose": [
+        // Enterprise features
+        "Enterprise/snapshot",
+        "Enterprise/hypervisor",
+    ],
+
+    "descriptions": {
+        "Enterprise/hypervisor": {
+            "en": "Hypervisor is a feature that allows you to run virtual machines on your system. It provides a way to create and manage virtualized environments.",
+            "ko": "하이퍼바이저는 시스템에서 가상 머신을 실행할 수 있게 해주는 기능입니다. 가상화된 환경을 만들고 관리하는 방법을 제공합니다."
+        }
+    }
+}
